@@ -1,0 +1,372 @@
+/* ──────────────────────────────────────────────────────────────
+   Pomodoro Widget — Brave-Inspired Compact Dark Theme
+   ────────────────────────────────────────────────────────────── */
+
+:root {
+  --bg-primary:    #191b1f;
+  --bg-nav:        #26292e;
+  --bg-elevated:   #2c2f35;
+  --accent:        #ff7632;
+  --accent-hover:  #ff8c52;
+  --text-primary:  #e8eaed;
+  --text-secondary:#9aa0a6;
+  --text-muted:    #6b7280;
+  --border:        #33363b;
+  --hover:         rgba(255, 255, 255, 0.07);
+  --success:       #4caf50;
+  --break-color:   #38bdf8;
+  --radius:        6px;
+  --font:          'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  font-family: var(--font);
+  background: transparent;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Shell ──────────────────────────────────────────────── */
+#pomodoro-shell {
+  width: 300px;
+  height: 440px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6),
+              0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+/* ── Header (draggable) ─────────────────────────────────── */
+#pomo-header {
+  width: 100%;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+  background: var(--bg-nav);
+  border-bottom: 1px solid var(--border);
+  -webkit-app-region: drag;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+#pomo-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  letter-spacing: 0.3px;
+}
+
+#pomo-header-btns {
+  display: flex;
+  gap: 4px;
+  -webkit-app-region: no-drag;
+}
+
+#pomo-settings-toggle,
+#pomo-close {
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+#pomo-settings-toggle:hover {
+  background: var(--hover);
+  color: var(--accent);
+}
+
+#pomo-close:hover {
+  background: rgba(239, 68, 68, 0.8);
+  color: #fff;
+}
+
+/* ── Views (toggle) ─────────────────────────────────────── */
+#timer-view,
+#settings-view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  width: 100%;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ── Phase Indicator ────────────────────────────────────── */
+#phase-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+#phase-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+#phase-label.work   { color: var(--accent); }
+#phase-label.break  { color: var(--break-color); }
+#phase-label.long   { color: var(--success); }
+
+#phase-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.phase-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  transition: all 0.3s ease;
+}
+
+.phase-dot.completed {
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 6px rgba(255, 118, 50, 0.4);
+}
+
+.phase-dot.active {
+  border-color: var(--accent);
+  animation: dot-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes dot-pulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 rgba(255, 118, 50, 0); }
+  50%      { transform: scale(1.3); box-shadow: 0 0 8px rgba(255, 118, 50, 0.4); }
+}
+
+/* ── Timer Ring ─────────────────────────────────────────── */
+#timer-container {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  margin: 16px 0 12px;
+}
+
+#timer-ring {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.ring-bg {
+  fill: none;
+  stroke: var(--bg-elevated);
+  stroke-width: 6;
+}
+
+.ring-fg {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-dasharray: 439.82;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 0.5s ease, stroke 0.3s ease;
+}
+
+.ring-fg.break { stroke: var(--break-color); }
+.ring-fg.long  { stroke: var(--success); }
+
+#timer-display {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+#timer-minutes,
+#timer-seconds {
+  font-size: 42px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -1px;
+  font-variant-numeric: tabular-nums;
+  min-width: 52px;
+  text-align: center;
+}
+
+#timer-sep {
+  font-size: 38px;
+  font-weight: 300;
+  color: var(--text-muted);
+  margin-top: -4px;
+  animation: blink 1s steps(1) infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0; }
+}
+
+/* ── Controls ───────────────────────────────────────────── */
+#controls {
+  display: flex;
+  gap: 10px;
+  margin: 4px 0;
+}
+
+.ctrl-btn {
+  padding: 8px 22px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+  font-family: var(--font);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.ctrl-btn:hover {
+  background: var(--hover);
+  color: var(--text-primary);
+  border-color: var(--text-muted);
+}
+
+.ctrl-btn:active {
+  transform: scale(0.96);
+}
+
+.ctrl-btn.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.ctrl-btn.primary:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+/* ── Session Counter ────────────────────────────────────── */
+#session-counter {
+  margin-top: 12px;
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+#session-count {
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 13px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   SETTINGS VIEW
+   ══════════════════════════════════════════════════════════════ */
+#settings-view {
+  padding: 16px 20px;
+  gap: 12px;
+  overflow-y: auto;
+}
+
+.settings-group {
+  width: 100%;
+}
+
+.settings-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+  cursor: default;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.settings-slider {
+  flex: 1;
+  height: 4px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--bg-elevated);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+.settings-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  border: 2px solid var(--bg-primary);
+  box-shadow: 0 0 4px rgba(255, 118, 50, 0.3);
+  transition: transform 0.15s ease;
+}
+
+.settings-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+.settings-val {
+  min-width: 50px;
+  text-align: right;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Checkboxes */
+.settings-label input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+/* Settings actions */
+#settings-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 10px;
+}

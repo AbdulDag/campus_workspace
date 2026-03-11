@@ -1,0 +1,54 @@
+{
+  "name": "campus-workspace",
+  "version": "1.0.0",
+  "description": "Secure Electron workspace for Ontario university students — eliminates D2L/Microsoft MFA fatigue and idle timeouts.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win",
+    "build:all": "electron-builder --win --mac --linux"
+  },
+  "author": "Campus Workspace",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^41.0.0",
+    "electron-builder": "^26.0.0"
+  },
+  "build": {
+    "appId": "com.campusworkspace.app",
+    "productName": "Campus Workspace",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "**/*",
+      "!dist/**",
+      "!node_modules/.cache/**"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "assets/icon.png"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Campus Workspace"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "assets/icon.png"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "assets/icon.png"
+    }
+  }
+}
