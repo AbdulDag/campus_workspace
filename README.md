@@ -19,7 +19,7 @@
 
 ## 🎯 Project Vision
 
-University students lose **hours per week** re-authenticating through Microsoft Entra ID and D2L Brightspace. Shared computers, AFK timeouts, and MFA fatigue break study flow constantly.
+University students hate re-authenticating through Microsoft Entra ID and D2L Brightspace. Shared computers, AFK timeouts, and MFA fatigue break study flow constantly.
 
 **Campus Workspace** is a purpose-built Electron browser that:
 - Persists your authenticated D2L session across app restarts and system reboots
